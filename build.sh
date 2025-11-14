@@ -26,8 +26,9 @@ python ./fs2json.py --out "$OUT_FSJSON" "$OUT_ROOTFS_TAR"
 mkdir -p "$OUT_ROOTFS_FLAT"
 python ./copy-to-sha256.py "$OUT_ROOTFS_TAR" "$OUT_ROOTFS_FLAT"
 
-rm -rf "$OUT_ROOTFS_TAR"
 
 node ./build-state.js
+
+rm -rf "$OUT_ROOTFS_TAR"
 
 echo "$OUT_ROOTFS_TAR", "$OUT_ROOTFS_FLAT" and "$OUT_FSJSON" created.
