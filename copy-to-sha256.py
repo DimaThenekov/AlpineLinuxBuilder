@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-# pip install backports.zstd
 
 import os
 import io
@@ -11,11 +10,12 @@ import hashlib
 import shutil
 import tarfile
 
-# --- New Zstandard import and setup ---
+# --------------------------------------
 import sys
 if sys.version_info >= (3, 14):
     from compression import zstd
 else:
+    # pip install zstandard
     import zstandard as zstd
 # --------------------------------------
 
@@ -30,33 +30,6 @@ def hash_fileobj(f) -> str:
     for b in iter(lambda: f.read(128*1024), b""):
         h.update(b)
     return h.hexdigest()
-
-# --- New compression function ---
-def compress_file_zstd(src_path, dst_path):
-    """
-    Compresses a file at src_path to a Zstandard compressed file at dst_path.
-    Uses the highest compression level for minimal size.
-    """
-    compressor = zstd.ZstdCompressor(level=22)
-    with open(src_path, 'rb') as src_file:
-        with open(dst_path, 'wb') as dst_file:
-            compressor.copy_stream(src_file,dst_file)
-import struct
-
-def compress_fileobj_zstd(src_fileobj, dst_path):
-    """
-    Compresses a file-like object to a Zstandard compressed file.
-    """
-    with open(dst_path, 'wb') as dst_file:
-        src_fileobj.seek(0, io.SEEK_END)
-        length = src_fileobj.tell()
-        src_fileobj.seek(0)  # Ensure we're at the beginning
-        dst_file.write(struct.pack('<i', length))
-        if length>20000:
-            zstd.ZstdCompressor(level=22).copy_stream(src_fileobj,dst_file)
-        else:
-            zstd.ZstdCompressor(level=3).copy_stream(src_fileobj,dst_file)
-# --------------------------------
 
 
 def main():
@@ -79,55 +52,32 @@ def main():
     else:
         tar = None
 
-    if tar:
-        handle_tar(logger, tar, to_path)
-    else:
-        handle_dir(logger, from_path, to_path)
+    handle_tar(logger, tar, to_path)
 
-def handle_dir(logger, from_path: str, to_path: str):
-    def onerror(oserror):
-        logger.warning(oserror)
-
-    files = os.walk(from_path, onerror=onerror)
-
-    for f in files:
-        dirpath, dirnames, filenames = f
-
-        for filename in filenames:
-            absname = os.path.join(dirpath, filename)
-            st = os.lstat(absname)
-            mode = st.st_mode
-
-            assert not stat.S_ISDIR(mode)
-            if stat.S_ISLNK(mode) or stat.S_ISCHR(mode) or stat.S_ISBLK(mode) or stat.S_ISFIFO(mode) or stat.S_ISSOCK(mode):
-                continue
-
-            file_hash = hash_file(absname)
-            filename = file_hash[0:HASH_LENGTH] + ".bin.zst"
-            to_abs = os.path.join(to_path, filename)
-
-            if os.path.exists(to_abs):
-                logger.info("Exists, skipped {} ({})".format(to_abs, absname))
-            else:
-                logger.info("Compressing {} to {}".format(absname, to_abs))
-                # --- Replaced shutil.copyfile with compression function ---
-                compress_file_zstd(absname, to_abs)
-                # ----------------------------------------------------------
 
 def handle_tar(logger, tar, to_path: str):
     for member in tar.getmembers():
         if member.isfile() or member.islnk():
             f = tar.extractfile(member)
             file_hash = hash_fileobj(f)
-            filename = file_hash[0:HASH_LENGTH] + ".bin.zst"
+            # ---------------------------------------------------
+            f.seek(0, io.SEEK_END)
+            length = f.tell()
+            filename = file_hash[0:HASH_LENGTH] + "-" + str(length) + ".bin.zst"
+            # ---------------------------------------------------
             to_abs = os.path.join(to_path, filename)
 
             if os.path.exists(to_abs):
                 logger.info("Exists, skipped {} ({})".format(to_abs, member.name))
             else:
                 logger.info("Extracted and compressing {} ({})".format(to_abs, member.name))
-                # --- Compress the extracted file object directly ---
-                compress_fileobj_zstd(f, to_abs)
+                # ---------------------------------------------------
+                f.seek(0)
+                with open(to_abs, 'wb') as dst_file:
+                    if length>20000:
+                        zstd.ZstdCompressor(level=22).copy_stream(f,dst_file)
+                    else:
+                        zstd.ZstdCompressor(level=3).copy_stream(f,dst_file)
                 # ---------------------------------------------------
 
 if __name__ == "__main__":

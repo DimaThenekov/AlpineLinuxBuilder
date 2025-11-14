@@ -2,3 +2,4 @@ dist/alpine-rootfs-flat
 dist/alpine-fs.json
 dist/alpine-state.bin
 dist/alpine-state.bin.zst
+dist/alpine-rootfs.tar
