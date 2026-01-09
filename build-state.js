@@ -20,10 +20,7 @@ var emulator = new V86({
     memory_size: 512 * 1024 * 1024,
     vga_memory_size: 8 * 1024 * 1024,
     net_device: {
-      relay_url: 'fetch',
-      type: 'virtio',
-      router_ip: '192.168.86.1',
-      vm_ip: '192.168.86.200',
+      type: undefined
     },
     bzimage_initrd_from_filesystem: true,
     cmdline: "rw root=host9p rootfstype=9p rootflags=trans=virtio,cache=loose modules=virtio_pci tsc=reliable init_on_free=on",
