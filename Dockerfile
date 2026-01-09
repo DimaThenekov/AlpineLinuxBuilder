@@ -1,7 +1,7 @@
 FROM docker.io/i386/alpine:3.21.0
 
 ENV KERNEL=virt
-ENV ADDPKGS="nodejs docker"
+ENV ADDPKGS="nodejs docker go"
 #  alpine-base alpine-conf openrc
 RUN apk add agetty linux-$KERNEL $ADDPKGS
 
@@ -15,7 +15,9 @@ RUN echo "root:" | chpasswd
 RUN echo -e "ip link set eth0 up && udhcpc -i eth0" > /root/networking.sh && chmod +x /root/networking.sh
 
 RUN echo 'console.log("Hello, world!");' > /root/hello.js
-RUN wget http://dima.mysoftware.ru/tmp/hello-world.tar
+RUN wget https://dimathenekov.github.io/go_server.go
+RUN wget https://dimathenekov.github.io/node_server.js
+RUN wget https://dimathenekov.github.io/hello-world.tar
 RUN mv hello-world.tar /root/hello-world.tar
 
 # https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot#Preparing_init_services
