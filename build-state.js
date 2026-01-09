@@ -3,6 +3,8 @@
 import path from "node:path";
 import fs from "node:fs";
 import url from "node:url";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const V86 = require('./dist/libv86.js');
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
