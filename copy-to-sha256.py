@@ -75,7 +75,7 @@ def handle_tar(logger, tar, to_path: str):
                 f.seek(0)
                 with open(to_abs, 'wb') as dst_file:
                     if length>20000:
-                        zstd.ZstdCompressor(level=22).copy_stream(f,dst_file)
+                        zstd.ZstdCompressor(level=19).copy_stream(f,dst_file)
                     else:
                         zstd.ZstdCompressor(level=3).copy_stream(f,dst_file)
                 # ---------------------------------------------------
