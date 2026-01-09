@@ -32,11 +32,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zstd curl
 
-      - name: Download v86 library files
-        run: |
-          curl -L https://copy.sh/v86/build/libv86.js -o ./dist/libv86.js
-          curl -L https://copy.sh/v86/build/v86.wasm -o ./dist/v86.wasm
-
       - name: Build VM image
         run: |
           chmod +x build.sh

@@ -11,6 +11,8 @@ CONTAINER_NAME=alpine-v86
 IMAGE_NAME=i386/alpine-v86
 
 mkdir -p "$IMAGES"
+curl -L https://copy.sh/v86/build/libv86.js -o "$IMAGES"/libv86.js
+curl -L https://copy.sh/v86/build/v86.wasm -o "$IMAGES"/v86.wasm
 docker build . --platform linux/386 --rm --tag "$IMAGE_NAME"
 docker rm "$CONTAINER_NAME" || true
 docker create --platform linux/386 -t -i --name "$CONTAINER_NAME" "$IMAGE_NAME"
