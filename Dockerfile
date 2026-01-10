@@ -16,7 +16,9 @@ RUN echo -e "ip link set eth0 up && udhcpc -i eth0" > /root/networking.sh && chm
 
 RUN echo 'console.log("Hello, world!");' > /root/hello.js
 RUN wget https://dimathenekov.github.io/go_server.go
+RUN mv go_server.go /root/go_server.go
 RUN wget https://dimathenekov.github.io/node_server.js
+RUN mv node_server.js /root/node_server.js
 RUN wget https://dimathenekov.github.io/hello-world.tar
 RUN mv hello-world.tar /root/hello-world.tar
 
