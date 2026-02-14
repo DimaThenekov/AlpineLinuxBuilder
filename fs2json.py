@@ -197,7 +197,7 @@ def handle_dir(logger, path, exclude):
                 obj[IDX_TARGET] = target
             elif isfile:
                 file_hash = hash_file(absname)
-                filename = file_hash[0:HASH_LENGTH] + "-" + str(member.size) + ".bin.zst"
+                filename = file_hash[0:HASH_LENGTH] + ".bin.zst"
                 existing = filename_to_hash.get(filename)
                 assert existing is None or existing == file_hash, "Collision in short hash (%s and %s)" % (existing, file_hash)
                 filename_to_hash[filename] = file_hash
@@ -240,7 +240,7 @@ def handle_tar(logger, tar):
             obj[IDX_MODE] |= S_IFREG
             f = tar.extractfile(member)
             file_hash = hash_fileobj(f)
-            filename = file_hash[0:HASH_LENGTH] + "-" + str(member.size) + ".bin.zst"
+            filename = file_hash[0:HASH_LENGTH] + ".bin.zst"
             existing = filename_to_hash.get(filename)
             assert existing is None or existing == file_hash, "Collision in short hash (%s and %s)" % (existing, file_hash)
             filename_to_hash[filename] = file_hash

@@ -61,9 +61,7 @@ def handle_tar(logger, tar, to_path: str):
             f = tar.extractfile(member)
             file_hash = hash_fileobj(f)
             # ---------------------------------------------------
-            f.seek(0, io.SEEK_END)
-            length = f.tell()
-            filename = file_hash[0:HASH_LENGTH] + "-" + str(length) + ".bin.zst"
+            filename = file_hash[0:HASH_LENGTH] + ".bin.zst"
             # ---------------------------------------------------
             to_abs = os.path.join(to_path, filename)
 
