@@ -29,24 +29,6 @@ var emulator = new V86({
         basefs: path.join(V86_ROOT, "alpine-fs.json"),
     },
 });
-(function f(){
-	if (emulator.fs9p) {
-		const cache = new Map();
-		emulator.fs9p.storage.load_from_server = async function(filePath) {
-			if (cache.get(filePath)) return cache.get(filePath);
-			
-			const url = emulator.fs9p.storage.baseurl + filePath;
-			let data = new Uint8Array(fs.readFileSync(url, null));
-			
-			if (url.endsWith(".zst")) {
-				data = new Uint8Array(emulator.zstd_decompress(+url.match(/-(\d+)./)[1], data));
-			}
-			
-			cache.set(filePath, data);
-			return data;
-		}
-	} else setTimeout(f);
-})();
 console.log("Now booting, please stand by ...");
 
 let serial_text = "";
