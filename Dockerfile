@@ -1,7 +1,7 @@
 FROM docker.io/i386/alpine:3.21.0
 
 ENV KERNEL=virt
-ENV ADDPKGS="nodejs npm sqlite postgresql postgresql-contrib"
+ENV ADDPKGS="nodejs npm sqlite postgresql postgresql-contrib bash file"
 #  alpine-base alpine-conf openrc
 RUN apk add agetty linux-$KERNEL $ADDPKGS
 
